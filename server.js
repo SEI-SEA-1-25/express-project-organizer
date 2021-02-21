@@ -12,8 +12,7 @@ const rowdyResults = rowdy.begin(app)
 // express middlewares
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
-
-
+ 
 // GET / - READ all projects
 app.get('/', async (req, res) => {
   try {
