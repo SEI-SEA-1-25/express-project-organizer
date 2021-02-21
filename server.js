@@ -13,26 +13,25 @@ const rowdyResults = rowdy.begin(app)
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
 
-/**
- * home route
- */
 
-app.get('/', (req, res) => {
-  db.project.findAll()
-  .then((projects) => {
-    res.render('main/index', { projects: projects })
-  })
-  .catch((error) => {
-    console.log('Error in GET /', error)
-    res.status(400).render('main/404')
-  })
+// GET / - READ all projects
+app.get('/', async (req, res) => {
+  try {
+    const projects = await db.project.findAll()
+    res.json({ projects: projects })
+  } catch(error) {
+    console.log(error)
+    res.status(400).json({ message: 'bad request' })
+  }
 })
 
+// controllers
 app.use('/projects', require('./controllers/projects'))
 
-app.get('*', (req, res) => {
-  res.render('main/404')
-})
+// 404 middleware
+app.use(function(req, res, next) {
+  res.status(404).json({ message: '404: not found' })
+});
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`)
