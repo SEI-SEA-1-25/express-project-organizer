@@ -1,15 +1,21 @@
-let express = require('express')
-let ejsLayouts = require('express-ejs-layouts')
-let db = require('./models')
-let rowdy = require('rowdy-logger')
-let app = express()
+// requried modules
+const express = require('express')
+const db = require('./models')
+const rowdy = require('rowdy-logger')
+const morgan = require('morgan')
 
-rowdy.begin(app)
+// config express app
+const app = express()
+const PORT = 3000
+const rowdyResults = rowdy.begin(app)
 
-app.set('view engine', 'ejs')
-app.use(require('morgan')('dev'))
+// express middlewares
+app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
-app.use(ejsLayouts)
+
+/**
+ * home route
+ */
 
 app.get('/', (req, res) => {
   db.project.findAll()
@@ -28,8 +34,7 @@ app.get('*', (req, res) => {
   res.render('main/404')
 })
 
-let server = app.listen(process.env.PORT || 3000, function() {
-  rowdy.print()
+app.listen(PORT, () => {
+  console.log(`listening on port ${PORT}`)
+  rowdyResults.print()
 })
-
-module.exports = server
