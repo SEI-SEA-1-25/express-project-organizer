@@ -16,7 +16,9 @@ app.use(express.urlencoded({ extended: false }))
 // GET / - READ all projects
 app.get('/', async (req, res) => {
   try {
-    const projects = await db.project.findAll()
+    const projects = await db.project.findAll({
+      include: [db.category]
+    })
     res.json({ projects: projects })
   } catch(error) {
     console.log(error)
@@ -26,6 +28,7 @@ app.get('/', async (req, res) => {
 
 // controllers
 app.use('/projects', require('./controllers/projects'))
+app.use('/categories', require('./controllers/categories'))
 
 // 404 middleware
 app.use(function(req, res, next) {
