@@ -23,10 +23,14 @@ We'll be using an existing application that includes one model, and a few routes
 
 After setup, **STOP**. You're using an existing application, so make sure to read the code and ensure what the application does. Here is some information about the current setup.
 
-* Routes
-  * `GET /` - index that lists all projects
-  * `POST /projects` - creates a new project, then redirects back to `GET /`
-  * `GET /projects/:id` - page that shows a specific project
+## Routes
+
+| Method | Path | Purpose |
+| ------ | -------------- | -------------------------------- |
+| GET | `/` | index that READS all projects |
+| POST | `POST /projects` | CREATES a new project, then redirects back to `GET /` |
+| GET | `/projects/:id` | READS a specific project |
+
 * Models
   * `project`
    * Attributes: `name`, `githubLink`, `deployedLink`, `description`
