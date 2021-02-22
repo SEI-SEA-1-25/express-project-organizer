@@ -24,9 +24,8 @@ We'll be using an existing application that includes one model, and a few routes
 After setup, **STOP**. You're using an existing application, so make sure to read the code and ensure what the application does. Here is some information about the current setup.
 
 * Routes
-  * `GET /` - home page that lists all projects
+  * `GET /` - index that lists all projects
   * `POST /projects` - creates a new project, then redirects back to `GET /`
-  * `GET /projects/new` - page that has a form for creating a new project
   * `GET /projects/:id` - page that shows a specific project
 * Models
   * `project`
@@ -53,7 +52,7 @@ In order to add categories, create a Sequelize model to store categories. It's r
 
 #### Part 2: Create a Join model
 
-In order to associate a category to many projects, and a project to many categories, we'll need to create an intermediate model. It's recommended that you name this model `categories_projects`. It will store two attributes: the id of a category (an integer) and the id of a project (an integer).
+In order to associate a category to many projects, and a project to many categories, we'll need to create an intermediate model which will interface with a **Join table** in your db. It's recommended that you name this model `categories_projects`. It will store two attributes: the id of a category (an integer) and the id of a project (an integer).
 
 Once created, add the associations need to create a many-to-many association between categories and projects, using the join table you just created. Be sure to test this functionality by creating categories and projects, then seeing if you can include them in different queries.
 
@@ -79,9 +78,9 @@ async function createCategory() {
 createCategory()
 ```
 
-Note that these are two possible queries you can perform. There are others that you'll want to test. Make sure you can have multiple projects associated with a given category, and also multiple categories associated with a given project.
+Note that these are two possible queries you can perform, so there are others that you'll want to test. Make sure you can have multiple projects associated with a given category, and also multiple categories associated with a given project.
 
-#### Part 3: Plan your RESTful API
+#### Part 3: Plan your **RESTful** API
 
 Now that the models have been created, you'll want to add the ability to create categories, view categories, and view projects by category to the rest of the application.
 
@@ -101,7 +100,7 @@ Using the [RESTful API](https://docs.google.com/spreadsheets/d/1J30GHznAqAL-BBaT
 
 #### Part 4: Stubbing routes
 
-Now that you have your API planned out. Stub those routes! Just use simple responses to ensure that everyhting is linked up.
+Using the handy **RESTful** routing resource document that you just generated, stub those routes! Just use simple responses in your route stubs to ensure that everyhting is linked up.
 
 #### Part 5: Adding CRUD functionality
 
