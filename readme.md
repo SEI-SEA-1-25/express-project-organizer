@@ -4,16 +4,17 @@ To practice N:M associations, we'll be adding the ability to categorize projects
 
 #### Backstory: Project Organizer
 
-Keeping track of projects is a necessary part of peoples' personal lives and businesses. Another individual has created a project organizer that allows you to create and view projects, but it'd be nice to categorize projects. Let's add this functionality!
+Keeping track of projects is a necessary part of peoples' personal lives and businesses. Another individual has created an open source project organizer that allows you to create and view projects, but it'd be nice to categorize projects. Let's add this functionality!
 
 ## Getting Started
 
-We'll be using an existing application that includes one model, a few routes, and a few views.
+We'll be using an existing application that includes one model, and a few routes.
 
 * Fork and clone this repository
 * Run `npm install` to install dependencies from the existing `package.json` file
   * Use `nodemon` to start your application
 * Setup your database (this app already has one existing model)
+  * Run `sequelize init:config` and update the config file
   * Run `sequelize db:create` to create the database
   * Run `sequelize db:migrate` to run migrations
   * Run `sequelize db:seed:all` to populate the database with 4 projects from previous Seattle cohorts.
@@ -31,6 +32,12 @@ After setup, **STOP**. You're using an existing application, so make sure to rea
   * `project`
    * Attributes: `name`, `githubLink`, `deployedLink`, `description`
 
+[here](https://www.getpostman.com/collections/1038496cce7b19d0500a) is a link to a postman collection of the routes.
+
+## Database Schema
+
+![project-organizer-erd](project-organizer-erd.png)
+
 ## User Stories
 
 * As a user, I want to categorize projects using different names. For example, all of my Node projects will be under the category "Node".
@@ -44,83 +51,67 @@ After setup, **STOP**. You're using an existing application, so make sure to rea
 
 In order to add categories, create a Sequelize model to store categories. It's recommended that you name this model `category`. It will store one attribute: the name of the category (a string).
 
-Once this model has been created, run the migration for the model and test the model's functionality. This can be done in a separate file. An example:
-
-**dbTest.js**
-
-```js
-const db = require('./models')
-
-db.category.create({
-  name: 'node'
-}).then(function(category) {
-  console.log(category.id)
-})
-```
-
 #### Part 2: Create a Join model
 
-In order to associate a category to many projects, and a project to many categories, we'll need to create an intermediate model. It's recommended that you name this model `categoriesProjects`. It will store two attributes: the id of a category (an integer) and the id of a project (an integer).
+In order to associate a category to many projects, and a project to many categories, we'll need to create an intermediate model. It's recommended that you name this model `categories_projects`. It will store two attributes: the id of a category (an integer) and the id of a project (an integer).
 
 Once created, add the associations need to create a many-to-many association between categories and projects, using the join table you just created. Be sure to test this functionality by creating categories and projects, then seeing if you can include them in different queries.
 
 ```js
-const db = require('./models')
+async function createCategory() {
+  try{
+    // READ a project
+    const project = await db.project.findOne({
+      where: { id: 1 }
+    })
+    // CREATE a category
+    const newCategory = await db.category.create({
+      name: 'Express'
+    })
+    // associate the category and project
+    await project.addCategory(newCategory)
 
-db.project.findOne({
-  where: { id: 1 },
-  include: [db.category]
-}).then(function(project) {
-  // by using eager loading, the project model should have a categories key
-  console.log(project.categories)
+  } catch(error) {
+    console.log(error)
+  }
+}
 
-  // createCategory function should be available to this model - it will create the category then add it to the project
-  project.createCategory({ name: 'node' }).then(function(category) {
-    console.log(category.id)
-  })
-})
+createCategory()
 ```
 
 Note that these are two possible queries you can perform. There are others that you'll want to test. Make sure you can have multiple projects associated with a given category, and also multiple categories associated with a given project.
 
-#### Part 3: Integrate the model with the app
+#### Part 3: Plan your RESTful API
 
-Now that the models have been created, you'll want to add the ability to create categories, view categories, and view projects by category to the rest of the application. Here is an approach you can take:
+Now that the models have been created, you'll want to add the ability to create categories, view categories, and view projects by category to the rest of the application.
 
-* Add a field to the existing view associated with `GET /projects/new`. This new field should accept a new category name. 
-  * Keep in mind that categories should be associated with projects
-  * Category names should be unique; the category model should have no duplicates (hint, use `findOrCreate`)
-* Add to the view associated with the `POST /projects` route, which allows the user to add categories to each individual project. 
-* Create the following routes for viewing categories and viewing projects by category:
-  * `GET /categories` - show all the categories that exist
-  * `GET /categories/:id` - show a specific category and all the projects with that category
+Take moment and plan out your routes. Consider the following functionality:
 
-#### Part 4: Styling
+* Showing all projects along with thier catagories
+* Adding categories when new projects are created
+* Showing a single project along with all of the categories that it is in
+* creating an association between and existing project and an existing category
+* Showing all categorories available
+* Making a new category
+* Showing one category and all the projects that are in it
 
-When finished with the above, style the application appropriately with CSS. Try using a CSS framework you haven't used before, or a CSS syntax like [BEM](http://getbem.com/introduction/) or [OOCSS](https://www.smashingmagazine.com/2011/12/an-introduction-to-object-oriented-css-oocss/).
+What routes will you need to accomplish these? Would you need to modify the existing routes or add news ones? Will you need another controller?
+
+Using the [RESTful API](https://docs.google.com/spreadsheets/d/1J30GHznAqAL-BBaTeV9slGHPC8sZLPoKorDuEGe7mZ0/edit?usp=sharing) spreadsheet as a reference, plan the URL paths and CRUD functionality of your routes.
+
+#### Part 4: Stubbing routes
+
+Now that you have your API planned out. Stub those routes! Just use simple responses to ensure that everyhting is linked up.
+
+#### Part 5: Adding CRUD functionality
+
+Once your routes are stubbed, and everything is responding to your requests, integrate your model! You can use your testDb.js to write the sequelize methods for your db CRUD first prior to integrating them into your routes if you like. 
 
 ## Bonuses
 
-* Add the ability to edit and delete projects
+* Add the ability to edit and delete projects and categories
 * Add the ability to input and assign multiple tags via a comma separated list.
   * Example: Inputting `node, pizza, music` would add all three tags to a project at once.
-  * You'll notice that this will require multiple queries, dependent on how many tags you're adding. Look into using the [async module](https://wdi_sea.gitbooks.io/notes/content/02-js-jquery/js-async/readme.html) in order to run multiple asynchronous functions and send a response at the correct time.
-
-## Deliverables
-
-Here are some example screenshots. Your finished deliverable will differ and include the desired functionality.
-
-#### New Project Page w/Categories
-
-![Example Project w/Categories](./example-project-categories.jpg)
-
-#### Categories Page
-
-![Example Categories Page](./example-categories.jpg)
-
-#### Categories Show Page
-
-![Example Categories Show Page](./example-categories-show.jpg)
 
 ---
 
