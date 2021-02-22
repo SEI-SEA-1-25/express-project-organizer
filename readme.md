@@ -56,6 +56,39 @@ In order to associate a category to many projects, and a project to many categor
 
 Once created, add the associations need to create a many-to-many association between categories and projects, using the join table you just created. Be sure to test this functionality by creating categories and projects, then seeing if you can include them in different queries.
 
+
+Remember: *This is a many to many relationship.* Many categories can have many pjects, and vice versa.
+
+<details>
+  <summary>Help! I'm not sure how to associate the models!</summary>
+
+  
+
+  ```js
+  // in project.js
+  static associate(models) {
+    // define association here
+    models.project.belongsToMany(models.category, {
+      through: 'categories_projects'
+    })
+  }
+  ```
+
+  And a comment will belong to an article:
+
+  ```js
+  // in category.js
+  static associate(models) {
+    // define association here
+    models.category.belongsToMany(models.project, {
+      through: 'categories_projects'
+    })
+  }
+  ```
+</details>
+
+**Test your db!**
+
 ```js
 async function createCategory() {
   try{
@@ -79,6 +112,8 @@ createCategory()
 ```
 
 Note that these are two possible queries you can perform, so there are others that you'll want to test. Make sure you can have multiple projects associated with a given category, and also multiple categories associated with a given project.
+
+Since both category and project belongsToMany, all of the [sequelize helper](https://sequelize.org/master/manual/assocs.html#-code-foo-hasmany-bar---code-) methods for associations are availible to both.
 
 #### Part 3: Plan your **RESTful** API
 
