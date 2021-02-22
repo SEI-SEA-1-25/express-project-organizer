@@ -45,7 +45,9 @@ After setup, **STOP**. You're using an existing application, so make sure to rea
 
 * As a user, I want to categorize projects using different names. For example, all of my Node projects will be under the category "Node".
 * As a user, I want to assign multiple categories to a single project.
+* As a user, I would like to assign a category when I create a new project
 * As a user, I want to view a list of categories I've assigned.
+* As a user, I want to view one category and all the projects in it
 * As a user, I want to view projects associated with a category I've selected.
 
 ## Requirements
